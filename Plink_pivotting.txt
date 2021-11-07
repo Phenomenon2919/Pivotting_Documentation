@@ -1,8 +1,9 @@
-***************************************************************************************************
+***************************************************************************************************************************************************************************
 *** PORTWARDING / PROXY from a window's compromised machine ***
-***************************************************************************************************
+***************************************************************************************************************************************************************************
 
-Plink.exe is a Windows command line version of the PuTTY SSH client. Now that Windows comes with its own inbuilt SSH client, plink is less useful for modern servers; however, it is still a very useful tool for OLD windows server.
+Plink.exe is a Windows command line version of the PuTTY SSH client. Now that Windows comes with its own inbuilt SSH client, plink is less useful for modern servers.
+ However, it is still a very useful tool for OLD windows server.
 
 * We use the following command to use plink to create a reverse connection from the compromised windows machine to the attack machine:
 
@@ -18,6 +19,8 @@ After downloading the tool, conversion can be done with:
 
 The generated .ppk file can be transferred to the Windows machine and used in the same way to create the reverse connection. **
 
-* To get the 'plink.exe' on the windows machine you can find it in "/usr/share/windows-resources/binaries/plink.exe". Always maintain the .exe file up to date. Outdated exe files may fail to generate the connection. New Plink version can be found at - https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+* To get the 'plink.exe' on the windows machine you can find it in "/usr/share/windows-resources/binaries/plink.exe".
+ Always maintain the .exe file up to date. Outdated exe files may fail to generate the connection. 
+ New Plink version can be found at - https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
 
-***************************************************************************************************
+***************************************************************************************************************************************************************************

