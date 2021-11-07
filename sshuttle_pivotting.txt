@@ -1,0 +1,35 @@
+***************************************************************************************************************************************************************************
+*** PIVOTING using 'sshuttle'
+***************************************************************************************************************************************************************************
+
+You can find the tool at - https://github.com/sshuttle/sshuttle
+In Debian environments you can install it using:
+> sudo apt install sshuttle
+
+* sshuttle does not port forward. Instead it uses an SSH connection to create a tunnelled proxy that acts like a new interface.
+* It simulates a VPN, allowing us to route our traffic through the proxy without the use of proxychains (or an equivalent).
+* We can just directly connect to devices in the target network as we would normally connect to networked devices.
+* As it creates a tunnel through SSH (the secure shell), anything we send through the tunnel is also encrypted.
+* We use sshuttle entirely on our attack machine, in much the same way we would SSH into a remote server. 
+
+**NOTE: sshuttle only works on Linux targets. It also requires access to the compromised server via SSH, and Python also needs to be installed on the server.
+ That said, with SSH access, it could theoretically be possible to upload a static copy of Python and work with that.
+ These restrictions do somewhat limit the uses for sshuttle. **
+
+To connect to a server:
+> sshuttle -r <username>@<IP Address> <network address/subnet>
+
+For automatic determination of subnet in the previous command use '-N' tag:
+> sshuttle -r <username>@<IP Address> -N
+
+When the server only accepts key-based authentication; sshuttle doesn't currently seem to have a shorthand for specifying a private key to authenticate to the server with.
+ That said, we can easily bypass this limitation using the "--ssh-cmd" tag:
+
+> sshuttle -r <username>@<IP Address> --ssh-cmd "ssh -i <KEYFILE>" <network address/subnet>
+
+An broken pipe error can occur when the compromised machine you're connecting to is part of the subnet you're attempting to gain access to.
+ In this case, we tell sshuttle to exclude the compromised server from the subnet range using the '-x' tag:
+
+> sshuttle -r <username>@<Compromised IP Address> <network address/subnet> -x <Compromised IP Address>
+
+***************************************************************************************************************************************************************************
